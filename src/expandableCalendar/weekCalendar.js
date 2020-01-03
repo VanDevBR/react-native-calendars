@@ -147,7 +147,7 @@ class WeekCalendar extends Component {
   getItemLayout = (data, index) => {
     return {
       length: this.props.calendarWidth || commons.screenWidth,
-      offset: this.props.calendarWidth || commons.screenWidth * index,
+      offset: (this.props.calendarWidth || commons.screenWidth) * index,
       index,
     };
   };
