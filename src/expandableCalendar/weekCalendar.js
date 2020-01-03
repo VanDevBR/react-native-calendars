@@ -8,7 +8,6 @@ import styleConstructor from './style';
 import CalendarList from '../calendar-list';
 import Week from '../expandableCalendar/week';
 
-
 const commons = require('./commons');
 const UPDATE_SOURCES = commons.UPDATE_SOURCES;
 const NUMBER_OF_PAGES = 2; // must be a positive number
@@ -17,7 +16,7 @@ class WeekCalendar extends Component {
   static propTypes = {
     ...CalendarList.propTypes,
     // the current date
-    current: PropTypes.any
+    current: PropTypes.any,
   };
 
   constructor(props) {
@@ -34,9 +33,15 @@ class WeekCalendar extends Component {
 
   componentDidUpdate(prevProps) {
     const {updateSource, date} = this.props.context;
-    if (date !== prevProps.context.date && updateSource !== UPDATE_SOURCES.WEEK_SCROLL) {
+    if (
+      date !== prevProps.context.date &&
+      updateSource !== UPDATE_SOURCES.WEEK_SCROLL
+    ) {
       this.setState({items: this.getDatesArray()});
-      this.list.current.scrollToIndex({animated: false, index: NUMBER_OF_PAGES});
+      this.list.current.scrollToIndex({
+        animated: false,
+        index: NUMBER_OF_PAGES,
+      });
     }
   }
 
@@ -62,18 +67,27 @@ class WeekCalendar extends Component {
     const dd = weekIndex === 0 ? d : d.addDays(firstDay - dayOfTheWeek);
     const newDate = dd.addWeeks(weekIndex);
     const dateString = newDate.toString('yyyy-MM-dd');
-    
+
     return dateString;
   }
 
-  onScroll = ({nativeEvent: {contentOffset: {x}}}) => {
+  onScroll = ({
+    nativeEvent: {
+      contentOffset: {x},
+    },
+  }) => {
     const newPage = Math.round(x / commons.screenWidth);
-    
+
     if (this.page !== newPage) {
       const {items} = this.state;
       this.page = newPage;
 
-      _.invoke(this.props.context, 'setDate', items[this.page], UPDATE_SOURCES.WEEK_SCROLL);
+      _.invoke(
+        this.props.context,
+        'setDate',
+        items[this.page],
+        UPDATE_SOURCES.WEEK_SCROLL,
+      );
 
       if (this.page === items.length - 1) {
         for (let i = 0; i <= NUMBER_OF_PAGES; i++) {
@@ -87,7 +101,7 @@ class WeekCalendar extends Component {
         this.setState({items: [...items]});
       }
     }
-  }
+  };
 
   onMomentumScrollEnd = () => {
     const {items} = this.state;
@@ -95,7 +109,10 @@ class WeekCalendar extends Component {
     const isLastPage = this.page === items.length - 1;
 
     if (isFirstPage || isLastPage) {
-      this.list.current.scrollToIndex({animated: false, index: NUMBER_OF_PAGES});
+      this.list.current.scrollToIndex({
+        animated: false,
+        index: NUMBER_OF_PAGES,
+      });
       this.page = NUMBER_OF_PAGES;
       const newWeekArray = this.getDatesArray();
 
@@ -113,20 +130,27 @@ class WeekCalendar extends Component {
         this.setState({items: [...items]});
       }, 100);
     }
-  }
+  };
 
   renderItem = ({item}) => {
     const {calendarWidth, style, ...others} = this.props;
-    return <Week {...others} current={item} key={item} style={[{width: calendarWidth || commons.screenWidth}, style]}/>;
-  }
+    return (
+      <Week
+        {...others}
+        current={item}
+        key={item}
+        style={[{width: calendarWidth || commons.screenWidth}, style]}
+      />
+    );
+  };
 
   getItemLayout = (data, index) => {
     return {
-      length: commons.screenWidth,
-      offset: commons.screenWidth * index,
-      index
+      length: this.props.calendarWidth || commons.screenWidth,
+      offset: this.props.calendarWidth || commons.screenWidth * index,
+      index,
     };
-  }
+  };
 
   keyExtractor = (item, index) => index.toString();
 
