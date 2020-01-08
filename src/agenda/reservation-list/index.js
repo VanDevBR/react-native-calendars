@@ -1,9 +1,5 @@
 import React, {Component} from 'react';
-import {
-  FlatList,
-  ActivityIndicator,
-  View
-} from 'react-native';
+import {FlatList, ActivityIndicator, View} from 'react-native';
 import Reservation from './reservation';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
@@ -13,7 +9,7 @@ import styleConstructor from './style';
 
 class ReactComp extends Component {
   static displayName = 'IGNORE';
-  
+
   static propTypes = {
     // specify your item comparison function for increased performance
     rowHasChanged: PropTypes.func,
@@ -32,6 +28,9 @@ class ReactComp extends Component {
     // considered that the date in question is not yet loaded
     reservations: PropTypes.object,
 
+    //specify how each row should be rendered. Overrides renderDay, renderItem and renderEmptyDate
+    renderItemRow: PropTypes.func,
+
     selectedDay: PropTypes.instanceOf(XDate),
     topDay: PropTypes.instanceOf(XDate),
     refreshControl: PropTypes.element,
@@ -43,9 +42,9 @@ class ReactComp extends Component {
     super(props);
     this.styles = styleConstructor(props.theme);
     this.state = {
-      reservations: []
+      reservations: [],
     };
-    this.heights=[];
+    this.heights = [];
     this.selectedDay = this.props.selectedDay;
     this.scrollOver = true;
   }
@@ -56,7 +55,7 @@ class ReactComp extends Component {
 
   updateDataSource(reservations) {
     this.setState({
-      reservations
+      reservations,
     });
   }
 
@@ -76,11 +75,14 @@ class ReactComp extends Component {
 
   componentWillReceiveProps(props) {
     if (!dateutils.sameDate(props.topDay, this.props.topDay)) {
-      this.setState({
-        reservations: []
-      }, () => {
-        this.updateReservations(props);
-      });
+      this.setState(
+        {
+          reservations: [],
+        },
+        () => {
+          this.updateReservations(props);
+        },
+      );
     } else {
       this.updateReservations(props);
     }
@@ -121,6 +123,8 @@ class ReactComp extends Component {
           renderEmptyDate={this.props.renderEmptyDate}
           theme={this.props.theme}
           rowHasChanged={this.props.rowHasChanged}
+          // hideItem={this.props.hideItem}
+          renderItemRow={this.props.renderItemRow}
         />
       </View>
     );
@@ -134,14 +138,16 @@ class ReactComp extends Component {
         return {
           reservation,
           date: i ? false : day,
-          day
+          day,
         };
       });
     } else if (res) {
-      return [{
-        date: iterator.clone(),
-        day
-      }];
+      return [
+        {
+          date: iterator.clone(),
+          day,
+        },
+      ];
     } else {
       return false;
     }
@@ -183,17 +189,23 @@ class ReactComp extends Component {
   }
 
   render() {
-    if (!this.props.reservations || !this.props.reservations[this.props.selectedDay.toString('yyyy-MM-dd')]) {
+    if (
+      !this.props.reservations ||
+      !this.props.reservations[this.props.selectedDay.toString('yyyy-MM-dd')]
+    ) {
       if (this.props.renderEmptyData) {
         return this.props.renderEmptyData();
       }
       return (
-        <ActivityIndicator style={{marginTop: 80}} color={this.props.theme && this.props.theme.indicatorColor} />
+        <ActivityIndicator
+          style={{marginTop: 80}}
+          color={this.props.theme && this.props.theme.indicatorColor}
+        />
       );
     }
     return (
       <FlatList
-        ref={(c) => this.list = c}
+        ref={c => (this.list = c)}
         style={this.props.style}
         contentContainerStyle={this.styles.content}
         renderItem={this.renderRow.bind(this)}
@@ -201,7 +213,10 @@ class ReactComp extends Component {
         onScroll={this.onScroll.bind(this)}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={200}
-        onMoveShouldSetResponderCapture={() => {this.onListTouch(); return false;}}
+        onMoveShouldSetResponderCapture={() => {
+          this.onListTouch();
+          return false;
+        }}
         keyExtractor={(item, index) => String(index)}
         refreshControl={this.props.refreshControl}
         refreshing={this.props.refreshing || false}
