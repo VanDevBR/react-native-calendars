@@ -355,6 +355,7 @@ export default class AgendaView extends Component {
 
     const weekdaysStyle = [
       this.styles.weekdays,
+      this.styles.weekClosed,
       {
         opacity: this.state.scrollY.interpolate({
           inputRange: [agendaHeight - HEADER_HEIGHT, agendaHeight],
