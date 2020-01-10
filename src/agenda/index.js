@@ -17,7 +17,7 @@ import ReservationsList from './reservation-list';
 import styleConstructor from './style';
 import {VelocityTracker} from '../input';
 
-const HEADER_HEIGHT = 115;
+const HEADER_HEIGHT = 120;
 const KNOB_HEIGHT = 24;
 //Fallback when RN version is < 0.44
 const viewPropTypes = ViewPropTypes || View.propTypes;
