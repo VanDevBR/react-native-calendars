@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {Text, View, Dimensions, Animated, ViewPropTypes} from 'react-native';
+import {
+  Text,
+  View,
+  Dimensions,
+  Animated,
+  ViewPropTypes,
+  Platform,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
 
@@ -10,7 +17,7 @@ import ReservationsList from './reservation-list';
 import styleConstructor from './style';
 import {VelocityTracker} from '../input';
 
-const HEADER_HEIGHT = 104;
+const HEADER_HEIGHT = 115;
 const KNOB_HEIGHT = 24;
 //Fallback when RN version is < 0.44
 const viewPropTypes = ViewPropTypes || View.propTypes;
@@ -473,21 +480,37 @@ export default class AgendaView extends Component {
           {knob}
         </Animated.View>
         <Animated.View style={weekdaysStyle}>
-          {this.props.showWeekNumbers && (
-            <Text
-              allowFontScaling={false}
-              style={this.styles.weekday}
-              numberOfLines={1}></Text>
-          )}
-          {weekDaysNames.map((day, index) => (
-            <Text
-              allowFontScaling={false}
-              key={day + index}
-              style={this.styles.weekday}
-              numberOfLines={1}>
-              {day}
+          <View
+            style={[
+              {alignSelf: 'center', paddingBottom: 3},
+              this.styles.headerMonthContainer,
+            ]}>
+            <Text style={[{fontSize: 20}, this.styles.headerMonthText]}>
+              {this.state.selectedDay.toString('MMMM yyyy')}
             </Text>
-          ))}
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent:
+                Platform.OS == 'android' ? 'space-between' : 'space-around',
+            }}>
+            {this.props.showWeekNumbers && (
+              <Text
+                allowFontScaling={false}
+                style={this.styles.weekday}
+                numberOfLines={1}></Text>
+            )}
+            {weekDaysNames.map((day, index) => (
+              <Text
+                allowFontScaling={false}
+                key={day + index}
+                style={this.styles.weekday}
+                numberOfLines={1}>
+                {day}
+              </Text>
+            ))}
+          </View>
         </Animated.View>
         <Animated.ScrollView
           ref={c => (this.scrollPad = c)}
