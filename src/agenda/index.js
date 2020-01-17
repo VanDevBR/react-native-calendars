@@ -17,7 +17,7 @@ import ReservationsList from './reservation-list';
 import styleConstructor from './style';
 import {VelocityTracker} from '../input';
 
-const HEADER_HEIGHT = 120;
+const HEADER_HEIGHT = 150;
 const KNOB_HEIGHT = 24;
 //Fallback when RN version is < 0.44
 const viewPropTypes = ViewPropTypes || View.propTypes;
@@ -482,7 +482,12 @@ export default class AgendaView extends Component {
         <Animated.View style={weekdaysStyle}>
           <View
             style={[
-              {alignSelf: 'center', paddingBottom: 3},
+              {
+                alignSelf: 'center',
+                paddingVertical: 10,
+                paddingTop: 10,
+                paddingBottom: 15,
+              },
               this.styles.headerMonthContainer,
             ]}>
             <Text style={[{fontSize: 20}, this.styles.headerMonthText]}>
