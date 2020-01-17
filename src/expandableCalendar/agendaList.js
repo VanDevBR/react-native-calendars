@@ -120,17 +120,19 @@ class AgendaList extends Component {
   }
 
   renderSectionHeader = ({section: {title}}) => {
-    const today = XDate().toString(this.props.dayFormat).toUpperCase();
-    const date = XDate(title).toString(this.props.dayFormat).toUpperCase();
+    const today = XDate().toString(this.props.dayFormat);
+    const date = XDate(title).toString(this.props.dayFormat);
     const todayString = XDate.locales[XDate.defaultLocale].today || commons.todayString;
-    const sectionTitle = date === today ? `${todayString.toUpperCase()}, ${date}` : date;
+    const sectionTitle = date === today ? `${todayString}, ${date}` : date;
     
     return (
       <Text allowFontScaling={false} style={[this.style.sectionText, this.props.sectionStyle]} onLayout={this.onHeaderLayout}>{sectionTitle}</Text>
     );
   }
 
-  keyExtractor = (item, index) => String(index);
+  keyExtractor = (item, index) => {
+    return _.isFunction(this.props.keyExtractor) ? this.props.keyExtractor(item, index) : String(index);
+  }
 
   render() {
     return (
