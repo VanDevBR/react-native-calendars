@@ -31,6 +31,9 @@ class ReactComp extends Component {
     //specify how each row should be rendered. Overrides renderDay, renderItem and renderEmptyDate
     renderItemRow: PropTypes.func,
 
+    /** Callback that gets called when agenda list scrolls */
+    onScroll: PropTypes.func,
+
     selectedDay: PropTypes.instanceOf(XDate),
     topDay: PropTypes.instanceOf(XDate),
     refreshControl: PropTypes.element,
@@ -106,6 +109,9 @@ class ReactComp extends Component {
     if (!sameDate && this.scrollOver) {
       this.selectedDay = day.clone();
       this.props.onDayChange(day.clone());
+    }
+    if (this.props.onScroll) {
+      this.props.onScroll(event);
     }
   }
 
