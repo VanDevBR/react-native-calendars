@@ -513,6 +513,7 @@ export default class AgendaView extends Component {
                              onDayPress={this._chooseDayFromCalendar.bind(this)}
                              scrollEnabled={this.state.calendarScrollable}
                              hideExtraDays={this.state.calendarScrollable}
+                             disableExtraDays={this.props.disableExtraDays}
                              firstDay={this.props.firstDay}
                              monthFormat={this.props.monthFormat}
                              pastScrollRange={this.props.pastScrollRange}
