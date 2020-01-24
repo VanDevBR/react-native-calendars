@@ -10,7 +10,7 @@ import styleConstructor from './style';
 
 class ReservationList extends Component {
   static displayName = 'IGNORE';
-  
+
   static propTypes = {
     // specify your item comparison function for increased performance
     rowHasChanged: PropTypes.func,
@@ -28,6 +28,9 @@ class ReservationList extends Component {
     // the value of date key kas to be an empty array []. If there exists no value for date key it is
     // considered that the date in question is not yet loaded
     reservations: PropTypes.object,
+    //specify how each row should be rendered. Overrides renderDay, renderItem and renderEmptyDate
+    renderItemRow: PropTypes.func,
+
     selectedDay: PropTypes.instanceOf(XDate),
     topDay: PropTypes.instanceOf(XDate),
     refreshControl: PropTypes.element,
@@ -37,13 +40,13 @@ class ReservationList extends Component {
 
   constructor(props) {
     super(props);
-    
+
     this.styles = styleConstructor(props.theme);
-    
+
     this.state = {
-      reservations: []
+      reservations: [],
     };
-    
+
     this.heights=[];
     this.selectedDay = this.props.selectedDay;
     this.scrollOver = true;
@@ -55,7 +58,7 @@ class ReservationList extends Component {
 
   updateDataSource(reservations) {
     this.setState({
-      reservations
+      reservations,
     });
   }
 
@@ -75,11 +78,14 @@ class ReservationList extends Component {
 
   UNSAFE_componentWillReceiveProps(props) {
     if (!dateutils.sameDate(props.topDay, this.props.topDay)) {
-      this.setState({
-        reservations: []
-      }, () => {
-        this.updateReservations(props);
-      });
+      this.setState(
+        {
+          reservations: [],
+        },
+        () => {
+          this.updateReservations(props);
+        },
+      );
     } else {
       this.updateReservations(props);
     }
@@ -104,6 +110,9 @@ class ReservationList extends Component {
       this.selectedDay = day.clone();
       this.props.onDayChange(day.clone());
     }
+    if (this.props.onScroll) {
+      this.props.onScroll(event);
+    }
   }
 
   onRowLayoutChange(ind, event) {
@@ -120,6 +129,8 @@ class ReservationList extends Component {
           renderEmptyDate={this.props.renderEmptyDate}
           theme={this.props.theme}
           rowHasChanged={this.props.rowHasChanged}
+          // hideItem={this.props.hideItem}
+          renderItemRow={this.props.renderItemRow}
         />
       </View>
     );
@@ -133,14 +144,16 @@ class ReservationList extends Component {
         return {
           reservation,
           date: i ? false : day,
-          day
+          day,
         };
       });
     } else if (res) {
-      return [{
-        date: iterator.clone(),
-        day
-      }];
+      return [
+        {
+          date: iterator.clone(),
+          day,
+        },
+      ];
     } else {
       return false;
     }
@@ -182,17 +195,23 @@ class ReservationList extends Component {
   }
 
   render() {
-    if (!this.props.reservations || !this.props.reservations[this.props.selectedDay.toString('yyyy-MM-dd')]) {
+    if (
+      !this.props.reservations ||
+      !this.props.reservations[this.props.selectedDay.toString('yyyy-MM-dd')]
+    ) {
       if (this.props.renderEmptyData) {
         return this.props.renderEmptyData();
       }
       return (
-        <ActivityIndicator style={{marginTop: 80}} color={this.props.theme && this.props.theme.indicatorColor}/>
+        <ActivityIndicator
+          style={{marginTop: 80}}
+          color={this.props.theme && this.props.theme.indicatorColor}
+        />
       );
     }
     return (
       <FlatList
-        ref={(c) => this.list = c}
+        ref={c => (this.list = c)}
         style={this.props.style}
         contentContainerStyle={this.styles.content}
         renderItem={this.renderRow.bind(this)}
@@ -200,7 +219,10 @@ class ReservationList extends Component {
         onScroll={this.onScroll.bind(this)}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={200}
-        onMoveShouldSetResponderCapture={() => {this.onListTouch(); return false;}}
+        onMoveShouldSetResponderCapture={() => {
+          this.onListTouch();
+          return false;
+        }}
         keyExtractor={(item, index) => String(index)}
         refreshControl={this.props.refreshControl}
         refreshing={this.props.refreshing || false}

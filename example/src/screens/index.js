@@ -7,12 +7,14 @@ import CalendarsList from './calendarsList';
 import HorizontalCalendarList from './horizontalCalendarList';
 import ExpandableCalendar from './expandableCalendar';
 
-
 export function registerScreens() {
   Navigation.registerComponent('Menu', () => MenuScreen);
   Navigation.registerComponent('Calendars', () => CalendarsScreen);
   Navigation.registerComponent('Agenda', () => AgendaScreen);
   Navigation.registerComponent('CalendarsList', () => CalendarsList);
-  Navigation.registerComponent('HorizontalCalendarList', () => HorizontalCalendarList);
+  Navigation.registerComponent(
+    'HorizontalCalendarList',
+    () => HorizontalCalendarList,
+  );
   Navigation.registerComponent('ExpandableCalendar', () => ExpandableCalendar);
 }

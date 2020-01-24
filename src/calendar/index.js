@@ -51,6 +51,8 @@ class Calendar extends Component {
     displayLoadingIndicator: PropTypes.bool,
     /** Do not show days of other months in month page. Default = false */
     hideExtraDays: PropTypes.bool,
+    /** Do not press days of other months in month page. Default = false */
+    disableExtraDays: PropTypes.bool,
     /** Handler which gets executed on day press. Default = undefined */
     onDayPress: PropTypes.func,
     /** Handler which gets executed on day long press. Default = undefined */
@@ -185,7 +187,7 @@ class Calendar extends Component {
           testID={`${SELECT_DATE_SLOT}-${dateAsObject.dateString}`}
           state={state}
           theme={this.props.theme}
-          onPress={this.pressDay}
+          onPress={(state === 'disabled' && this.props.disableExtraDays) ? ()=>{} : this.pressDay}
           onLongPress={this.longPressDay}
           date={dateAsObject}
           marking={this.getDateMarking(day)}
