@@ -2,7 +2,6 @@ import {StyleSheet} from 'react-native';
 import * as defaultStyle from '../style';
 import platformStyles from './platform-style';
 
-
 const STYLESHEET_ID = 'stylesheet.agenda.main';
 
 export default function styleConstructor(theme = {}) {
@@ -15,10 +14,10 @@ export default function styleConstructor(theme = {}) {
     header: {
       overflow: 'hidden',
       justifyContent: 'flex-end',
-      position:'absolute',
-      height:'100%',
-      width:'100%',
-      paddingTop: 13
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
+      paddingTop: 14,
     },
     knobContainer: {
       flex: 1,

@@ -4,7 +4,8 @@ import {
   View,
   Dimensions,
   Animated,
-  ViewPropTypes,
+  Platform,
+  ViewPropTypes
 } from 'react-native';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
@@ -94,7 +95,7 @@ export default class AgendaView extends Component {
     /** Specify how each row should be rendered. Overrides renderDay, renderItem and renderEmptyDate */
     renderItemRow: PropTypes.func,
     /** Callback that gets called when agenda list scrolls */
-    onScroll: PropTypes.func,
+    onScroll: PropTypes.func
   };
 
   constructor(props) {
@@ -114,7 +115,7 @@ export default class AgendaView extends Component {
       calendarScrollable: false,
       firstResevationLoad: false,
       selectedDay: parseDate(this.props.selected) || XDate(true),
-      topDay: parseDate(this.props.selected) || XDate(true),
+      topDay: parseDate(this.props.selected) || XDate(true)
     };
 
     this.currentMonth = this.state.selectedDay.clone();
@@ -223,7 +224,7 @@ export default class AgendaView extends Component {
     ) {
       this.setState(
         {
-          firstResevationLoad: true,
+          firstResevationLoad: true
         },
         () => {
           if (this.props.loadItemsForMonth) {
@@ -257,7 +258,7 @@ export default class AgendaView extends Component {
 
   enableCalendarScrolling() {
     this.setState({
-      calendarScrollable: true,
+      calendarScrollable: true
     });
 
     if (this.props.onCalendarToggled) {
@@ -287,7 +288,7 @@ export default class AgendaView extends Component {
 
     this.setState({
       calendarScrollable: false,
-      selectedDay: day.clone(),
+      selectedDay: day.clone()
     });
 
     if (this.props.onCalendarToggled) {
@@ -296,7 +297,7 @@ export default class AgendaView extends Component {
 
     if (!optimisticScroll) {
       this.setState({
-        topDay: day.clone(),
+        topDay: day.clone()
       });
     }
 
@@ -355,7 +356,7 @@ export default class AgendaView extends Component {
       withAnimation,
     );
     this.setState({
-      selectedDay: parseDate(day),
+      selectedDay: parseDate(day)
     });
 
     if (this.props.onDayChange) {
@@ -381,7 +382,7 @@ export default class AgendaView extends Component {
     const key = this.state.selectedDay.toString('yyyy-MM-dd');
     return {
       ...markings,
-      [key]: {...(markings[key] || {}), ...{selected: true}},
+      [key]: {...(markings[key] || {}), ...{selected: true}}
     };
   }
 
@@ -389,39 +390,42 @@ export default class AgendaView extends Component {
     const agendaHeight = this.initialScrollPadPosition();
     const weekDaysNames = dateutils.weekDayNames(this.props.firstDay);
 
-    const weekdaysStyle = [this.styles.weekdays, {
-      opacity: this.state.scrollY.interpolate({
-        inputRange: [agendaHeight - HEADER_HEIGHT, agendaHeight],
-        outputRange: [0, 1],
-        extrapolate: 'clamp'
-      }),
-      transform: [{
-        translateY: this.state.scrollY.interpolate({
-          inputRange: [Math.max(0, agendaHeight - HEADER_HEIGHT), agendaHeight],
-          outputRange: [-HEADER_HEIGHT, 0],
+    const weekdaysStyle = [
+      this.styles.weekdays,
+      this.styles.weekClosed,
+      {
+        opacity: this.state.scrollY.interpolate({
+          inputRange: [agendaHeight - HEADER_HEIGHT, agendaHeight],
+          outputRange: [0, 1],
           extrapolate: 'clamp'
-        })
-      }]
-    }];
+        }),
+        transform: [{
+          translateY: this.state.scrollY.interpolate({
+            inputRange: [Math.max(0, agendaHeight - HEADER_HEIGHT), agendaHeight],
+            outputRange: [-HEADER_HEIGHT, 0],
+            extrapolate: 'clamp'
+          })
+        }]
+      }];
 
     const headerTranslate = this.state.scrollY.interpolate({
       inputRange: [0, agendaHeight],
       outputRange: [agendaHeight, 0],
-      extrapolate: 'clamp',
+      extrapolate: 'clamp'
     });
 
     const contentTranslate = this.state.scrollY.interpolate({
       inputRange: [0, agendaHeight],
       outputRange: [0, agendaHeight / 2],
-      extrapolate: 'clamp',
+      extrapolate: 'clamp'
     });
 
     const headerStyle = [
       this.styles.header,
       {
         bottom: agendaHeight,
-        transform: [{translateY: headerTranslate}],
-      },
+        transform: [{translateY: headerTranslate}]
+      }
     ];
 
     if (!this.state.calendarIsReady) {
@@ -441,7 +445,7 @@ export default class AgendaView extends Component {
       width: 80,
       height: KNOB_HEIGHT,
       top: scrollPadPosition,
-      left: (this.viewWidth - 80) / 2,
+      left: (this.viewWidth - 80) / 2
     };
 
     let knob = <View style={this.styles.knobContainer}/>;
@@ -504,14 +508,14 @@ export default class AgendaView extends Component {
                 alignSelf: 'center',
                 paddingVertical: 10,
                 paddingTop: 10,
-                paddingBottom: 15,
+                paddingBottom: 15
               },
-              this.styles.headerMonthContainer,
+              this.styles.headerMonthContainer
             ]}>
             <Text
               style={[
                 {fontSize: 20},
-                this.styles.headerMonthText,
+                this.styles.headerMonthText
               ]}>
               {this.state.selectedDay.toString('MMMM yyyy')}
             </Text>
@@ -522,13 +526,13 @@ export default class AgendaView extends Component {
               justifyContent:
                 Platform.OS == 'android'
                   ? 'space-between'
-                  : 'space-around',
+                  : 'space-around'
             }}>
-          {this.props.showWeekNumbers &&
+            {this.props.showWeekNumbers &&
           <Text allowFontScaling={false} style={this.styles.weekday} numberOfLines={1}></Text>}
-          {weekDaysNames.map((day, index) => (
-            <Text allowFontScaling={false} key={day + index} style={this.styles.weekday} numberOfLines={1}>{day}</Text>
-          ))}
+            {weekDaysNames.map((day, index) => (
+              <Text allowFontScaling={false} key={day + index} style={this.styles.weekday} numberOfLines={1}>{day}</Text>
+            ))}
           </View>
         </Animated.View>
         <Animated.ScrollView
@@ -549,7 +553,7 @@ export default class AgendaView extends Component {
           )}
         >
           <View testID={AGENDA_CALENDAR_KNOB} style={{height: agendaHeight + KNOB_HEIGHT}}
-                onLayout={this.onScrollPadLayout}/>
+            onLayout={this.onScrollPadLayout}/>
         </Animated.ScrollView>
       </View>
     );
