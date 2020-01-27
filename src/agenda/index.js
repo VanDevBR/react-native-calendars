@@ -95,7 +95,10 @@ export default class AgendaView extends Component {
     /** Specify how each row should be rendered. Overrides renderDay, renderItem and renderEmptyDate */
     renderItemRow: PropTypes.func,
     /** Callback that gets called when agenda list scrolls */
-    onScroll: PropTypes.func
+    onScroll: PropTypes.func,
+
+    /** Load Items only for selected month */
+    lazyLoadMonths: PropTypes.bool
   };
 
   constructor(props) {
@@ -204,6 +207,9 @@ export default class AgendaView extends Component {
   }
 
   onVisibleMonthsChange(months) {
+    if(this.props.lazyLoadMonths){
+      return;
+    }
     if (this.props.onVisibleMonthsChange) {
       this.props.onVisibleMonthsChange(months);
     }
