@@ -5,7 +5,8 @@ import {
   Animated,
   View,
   Text,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
@@ -438,10 +439,14 @@ class ExpandableCalendar extends Component {
   }
 
   renderKnob() {
-    // TODO: turn to TouchableOpacity with onPress that closes it
     return (
       <View style={this.style.knobContainer} pointerEvents={'none'}>
-        <View style={this.style.knob} testID={CALENDAR_KNOB}/>
+        <TouchableOpacity onPress={()=>{
+          this.bounceToPosition(this.state.position === POSITIONS.CLOSED ? this.openHeight : this.closedHeight);
+          this.setPosition();
+        }}>
+          <View style={this.style.knob} testID={CALENDAR_KNOB}/>
+        </TouchableOpacity>
       </View>
     );
   }

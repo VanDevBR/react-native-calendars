@@ -39,7 +39,7 @@ export default function styleConstructor(theme = {}) {
     },
     knob: {
       width: 40,
-      height: 4,
+      height: 6,
       borderRadius: 3,
       backgroundColor: '#e8ecf0'
     },
