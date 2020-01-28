@@ -440,7 +440,7 @@ class ExpandableCalendar extends Component {
 
   renderKnob() {
     return (
-      <View style={this.style.knobContainer} pointerEvents={'none'}>
+      <View style={this.style.knobContainer}>
         <TouchableOpacity onPress={()=>{
           this.bounceToPosition(this.state.position === POSITIONS.CLOSED ? this.openHeight : this.closedHeight);
           this.setPosition();
