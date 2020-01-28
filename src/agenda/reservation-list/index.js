@@ -50,6 +50,7 @@ class ReservationList extends Component {
     this.heights=[];
     this.selectedDay = this.props.selectedDay;
     this.scrollOver = true;
+    this.shouldScroll = false;
   }
 
   UNSAFE_componentWillMount() {
@@ -63,30 +64,46 @@ class ReservationList extends Component {
   }
 
   updateReservations(props) {
+    console.log(">>>> updateReservations...");
     const reservations = this.getReservations(props);
-    if (this.list && !dateutils.sameDate(props.selectedDay, this.selectedDay)) {
+    console.log(">>>>> reservations.scrollPosition:", reservations.scrollPosition);
+    console.log(">>>> shouldScroll:", this.shouldScroll);
+    if (this.list && (this.shouldScroll || !dateutils.sameDate(props.selectedDay, this.selectedDay))) {
       let scrollPosition = 0;
       for (let i = 0; i < reservations.scrollPosition; i++) {
         scrollPosition += this.heights[i] || 0;
       }
       this.scrollOver = false;
+      console.log(">>> scrollingTo:", scrollPosition);
       this.list.scrollToOffset({offset: scrollPosition, animated: true});
+      if(this.shouldScroll){
+        this.shouldScroll = false;
+      }
+    }else{
+      console.log(">>> sameDate...");
+      if(!this.list){
+        this.shouldScroll = true;
+        setTimeout(()=>{this.props.onDayChange(props.selectedDay);}, 500);
+      }
     }
     this.selectedDay = props.selectedDay;
     this.updateDataSource(reservations.reservations);
   }
 
   UNSAFE_componentWillReceiveProps(props) {
-    if (!dateutils.sameDate(props.topDay, this.props.topDay)) {
+    console.log(">>> receivingProps:", props);
+    if (!dateutils.sameMonth(props.topDay, this.props.topDay)) {
       this.setState(
         {
           reservations: [],
         },
         () => {
+          console.log("willReceive1");
           this.updateReservations(props);
         },
       );
     } else {
+      console.log("willReceive2");
       this.updateReservations(props);
     }
   }
@@ -181,8 +198,16 @@ class ReservationList extends Component {
         iterator.addDays(1);
       }
     }
-    const scrollPosition = reservations.length;
-    const iterator = props.selectedDay.clone();
+    // console.log(">>>> props", props);
+    // console.log(">>>>> reservations:", reservations);
+    // console.log(">>>>> reservations prop:", props.reservations);
+    let scrollPosition = reservations.length;
+    let iterator = props.selectedDay.clone();
+    if(reservations.length === 0){
+      iterator.setDate(1);
+      // this.selectedDay = iterator;
+    }
+    // console.log(">>>> iterator", iterator);
     for (let i = 0; i < 31; i++) {
       const res = this.getReservationsForDay(iterator, props);
       if (res) {
@@ -190,7 +215,9 @@ class ReservationList extends Component {
       }
       iterator.addDays(1);
     }
-
+    // console.log(">>>>> reservations:", reservations);
+    // scrollPosition = this.calculateScrollPosition(reservations);
+    // console.log(">>>>> scrollPosition:", scrollPosition);
     return {reservations, scrollPosition};
   }
 
