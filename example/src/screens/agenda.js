@@ -43,7 +43,7 @@ export default class AgendaScreen extends Component {
     setTimeout(() => {
       let newItems = {};
 
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 1; i <= 28; i++) {
         var key =
           day.year +
           '-' +
@@ -53,9 +53,9 @@ export default class AgendaScreen extends Component {
         newItems[key] = [{name: 'Item for: ' + key}];
       }
       this.setState({
-        items: newItems,
+        items: newItems
       });
-    }, 1000);
+    }, 2000);
     // console.log(`Load Items for ${day.year}-${day.month}`);
   }
 
@@ -92,11 +92,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
-    marginTop: 17,
+    marginTop: 17
   },
   emptyDate: {
     height: 15,
     flex: 1,
-    paddingTop: 30,
-  },
+    paddingTop: 30
+  }
 });
