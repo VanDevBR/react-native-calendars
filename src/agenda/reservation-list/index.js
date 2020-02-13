@@ -82,13 +82,13 @@ class ReservationList extends Component {
       }
     }else{
       // console.log('>>> sameDate...');
-      if(!this.list){
+      if(!this.list && !this.isLoading){
         this.shouldScroll = true;
         this.isLoading = true;
         let wait = new Promise((resolve) => setTimeout(resolve, 3000));  // Smaller number should work
         wait.then( () => {
-          this.props.onDayChange(props.selectedDay);
           this.isLoading = false;
+          this.props.onDayChange(props.selectedDay);
         });
       }
     }
