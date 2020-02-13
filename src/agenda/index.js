@@ -5,7 +5,7 @@ import {
   Dimensions,
   Animated,
   Platform,
-  ViewPropTypes
+  ViewPropTypes, TouchableOpacity
 } from 'react-native';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
@@ -17,6 +17,9 @@ import ReservationsList from './reservation-list';
 import styleConstructor from './style';
 import {VelocityTracker} from '../input';
 import {AGENDA_CALENDAR_KNOB} from '../testIDs';
+
+const iconDown = require('../img/down.png');
+const iconUp = require('../img/up.png');
 
 const HEADER_HEIGHT = 150;
 const KNOB_HEIGHT = 24;
@@ -118,7 +121,12 @@ export default class AgendaView extends Component {
       calendarScrollable: false,
       firstResevationLoad: false,
       selectedDay: parseDate(this.props.selected) || XDate(true),
-      topDay: parseDate(this.props.selected) || XDate(true)
+      topDay: parseDate(this.props.selected) || XDate(true),
+
+      buttonY: new Animated.Value(-props.todayBottomMargin || -65),
+      buttonIcon: this.getButtonIcon(props.date),
+      disabled: false,
+      opacity: new Animated.Value(1)
     };
 
     this.currentMonth = this.state.selectedDay.clone();
@@ -392,6 +400,54 @@ export default class AgendaView extends Component {
     };
   }
 
+  goToToday = () =>{
+    const today = XDate().toString('yyyy-MM-dd');
+    this.chooseDay(today, this.state.calendarScrollable);
+  };
+
+  isPastDate(date) {
+    const today = XDate();
+    const d = XDate(date);
+
+    if (today.getFullYear() > d.getFullYear()) {
+      return true;
+    }
+    if (today.getFullYear() === d.getFullYear()) {
+      if (today.getMonth() > d.getMonth()) {
+        return true;
+      }
+      if (today.getMonth() === d.getMonth()) {
+        if (today.getDate() > d.getDate()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  getButtonIcon(date) {
+    if (!this.props.showTodayButton) {
+      return;
+    }
+    const isPastDate = this.isPastDate(date);
+    return isPastDate ? iconDown : iconUp;
+  }
+
+  renderTodayButton() {
+    const {disabled, opacity, buttonY, buttonIcon} = this.state;
+    const todayString = XDate.locales[XDate.defaultLocale].today || 'today';
+    const today = todayString.charAt(0).toUpperCase() + todayString.slice(1);
+
+    return (
+      <Animated.View style={[this.styles.todayButtonContainer, {transform: [{translateY: buttonY}]}]}>
+        <TouchableOpacity style={[this.styles.todayButton, this.props.todayButtonStyle]} onPress={this.goToToday()} disabled={disabled}>
+          <Animated.Image style={[this.styles.todayButtonImage, {opacity}]} source={buttonIcon}/>
+          <Animated.Text allowFontScaling={false} style={[this.styles.todayButtonText, {opacity}]}>{today}</Animated.Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
+
   render() {
     const agendaHeight = this.initialScrollPadPosition();
     const weekDaysNames = dateutils.weekDayNames(this.props.firstDay);
@@ -474,6 +530,7 @@ export default class AgendaView extends Component {
       <View onLayout={this.onLayout} style={[this.props.style, {flex: 1, overflow: 'hidden'}]}>
         <View style={this.styles.reservations}>
           {this.renderReservations()}
+          {this.props.showTodayButton && this.renderTodayButton()}
         </View>
         <Animated.View style={headerStyle}>
           <Animated.View style={{flex: 1, transform: [{translateY: contentTranslate}]}}>

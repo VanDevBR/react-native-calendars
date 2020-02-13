@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 
 export default class AgendaScreen extends Component {
@@ -8,19 +8,30 @@ export default class AgendaScreen extends Component {
     this.state = {
       items: {}
     };
+    this.agenda;
   }
 
   render() {
     return (
-      <Agenda
-        items={this.state.items}
-        loadItemsForMonth={this.loadItems.bind(this)}
-        selected={'2020-01-01'}
-        renderItem={this.renderItem.bind(this)}
-        renderEmptyDate={this.renderEmptyDate.bind(this)}
-        rowHasChanged={this.rowHasChanged.bind(this)}
-        // disableExtraDays={true}
-        lazyLoadMonths={true}
+      <View style={{flex: 1}}>
+        <TouchableOpacity style={{alignSelf: 'center', backgroundColor: '#00BBF2', padding: 5, margin: 5, borderRadius: 5}} onPress={()=>{
+          if(this.agenda){
+            this.agenda.goToToday();
+          }
+        }}>
+          <Text style={{color: 'white'}}>today</Text>
+        </TouchableOpacity>
+        <Agenda
+          ref={(r)=>{this.agenda = r;}}
+          items={this.state.items}
+          loadItemsForMonth={this.loadItems.bind(this)}
+          selected={'2020-01-01'}
+          renderItem={this.renderItem.bind(this)}
+          renderEmptyDate={this.renderEmptyDate.bind(this)}
+          rowHasChanged={this.rowHasChanged.bind(this)}
+          showTodayButton={true}
+          // disableExtraDays={true}
+          lazyLoadMonths={true}
         // markingType={'period'}
         // markedDates={{
         //    '2017-05-08': {textColor: '#43515c'},
@@ -35,7 +46,8 @@ export default class AgendaScreen extends Component {
         // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
         //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
         // hideExtraDays={false}
-      />
+        />
+      </View>
     );
   }
 
