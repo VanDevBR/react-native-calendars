@@ -44,14 +44,14 @@ class ReservationList extends Component {
     this.styles = styleConstructor(props.theme);
 
     this.state = {
-      reservations: []
+      reservations: [],
+      isLoading: false
     };
 
     this.heights=[];
     this.selectedDay = this.props.selectedDay;
     this.scrollOver = true;
-    this.shouldScroll = false;
-    this.isLoading = false;
+    this.loadTimeout = null;
   }
 
   UNSAFE_componentWillMount() {
@@ -65,33 +65,27 @@ class ReservationList extends Component {
   }
 
   updateReservations(props) {
-    // console.log('>>>> updateReservations...');
     const reservations = this.getReservations(props);
-    // console.log('>>>>> reservations.scrollPosition:', reservations.scrollPosition);
-    // console.log('>>>> shouldScroll:', this.shouldScroll);
-    if (this.list && (this.shouldScroll || !dateutils.sameDate(props.selectedDay, this.selectedDay))) {
+    if (this.list && !dateutils.sameDate(props.selectedDay, this.selectedDay)) {
       let scrollPosition = 0;
       for (let i = 0; i < reservations.scrollPosition; i++) {
         scrollPosition += this.heights[i] || 0;
       }
       this.scrollOver = false;
-      // console.log('>>> scrollingTo:', scrollPosition);
       this.list.scrollToOffset({offset: scrollPosition, animated: true});
-      if(this.shouldScroll){
-        this.shouldScroll = false;
-      }
-    }else{
-      // console.log('>>> sameDate...');
-      if(!this.list && !this.isLoading){
-        this.shouldScroll = true;
-        this.isLoading = true;
-        let wait = new Promise((resolve) => setTimeout(resolve, 3000));  // Smaller number should work
-        wait.then( () => {
-          this.isLoading = false;
-          this.props.onDayChange(props.selectedDay);
-        });
-      }
     }
+    this.selectedDay = props.selectedDay;
+    this.updateDataSource(reservations.reservations);
+  }
+
+  updateReservationsCore(props) {
+    const reservations = this.getReservations(props);
+    let scrollPosition = 0;
+    for (let i = 0; i < reservations.scrollPosition; i++) {
+      scrollPosition += this.heights[i] || 0;
+    }
+    this.scrollOver = false;
+    this.list.scrollToOffset({offset: scrollPosition, animated: true});
     this.selectedDay = props.selectedDay;
     this.updateDataSource(reservations.reservations);
   }
@@ -204,16 +198,13 @@ class ReservationList extends Component {
         iterator.addDays(1);
       }
     }
-    // console.log(">>>> props", props);
-    // console.log(">>>>> reservations:", reservations);
-    // console.log(">>>>> reservations prop:", props.reservations);
+
     let scrollPosition = reservations.length;
     let iterator = props.selectedDay.clone();
     if(reservations.length === 0){
       iterator.setDate(1);
-      // this.selectedDay = iterator;
     }
-    // console.log(">>>> iterator", iterator);
+
     for (let i = 0; i < 31; i++) {
       const res = this.getReservationsForDay(iterator, props);
       if (res) {
@@ -221,9 +212,7 @@ class ReservationList extends Component {
       }
       iterator.addDays(1);
     }
-    // console.log(">>>>> reservations:", reservations);
-    // scrollPosition = this.calculateScrollPosition(reservations);
-    // console.log(">>>>> scrollPosition:", scrollPosition);
+
     return {reservations, scrollPosition};
   }
 
@@ -261,9 +250,19 @@ class ReservationList extends Component {
           refreshControl={this.props.refreshControl}
           refreshing={this.props.refreshing || false}
           onRefresh={this.props.onRefresh}
-          scrollEnabled={!this.isLoading}
+          scrollEnabled={!this.state.isLoading}
+          onContentSizeChange={()=>{
+            if(this.loadTimeout){
+              clearTimeout(this.loadTimeout);
+              this.setState({isLoading: true})
+            }
+            this.loadTimeout = setTimeout(()=>{
+              this.updateReservationsCore(this.props)
+              this.setState({isLoading: false})
+            }, 300);
+          }}
         />
-        {this.isLoading && (
+        {this.state.isLoading && (
           <View style={{backgroundColor:'#FFFFFFD9', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
             <ActivityIndicator
               style={{marginTop: 80}}

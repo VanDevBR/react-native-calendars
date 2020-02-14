@@ -440,7 +440,7 @@ export default class AgendaView extends Component {
 
     return (
       <Animated.View style={[this.styles.todayButtonContainer, {transform: [{translateY: buttonY}]}]}>
-        <TouchableOpacity style={[this.styles.todayButton, this.props.todayButtonStyle]} onPress={this.goToToday()} disabled={disabled}>
+        <TouchableOpacity style={[this.styles.todayButton, this.props.todayButtonStyle]} onPress={this.goToToday} disabled={disabled}>
           <Animated.Image style={[this.styles.todayButtonImage, {opacity}]} source={buttonIcon}/>
           <Animated.Text allowFontScaling={false} style={[this.styles.todayButtonText, {opacity}]}>{today}</Animated.Text>
         </TouchableOpacity>
