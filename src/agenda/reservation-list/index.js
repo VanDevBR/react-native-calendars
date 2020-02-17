@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FlatList, ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, FlatList, View} from 'react-native';
 import Reservation from './reservation';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
@@ -65,17 +65,21 @@ class ReservationList extends Component {
   }
 
   updateReservations(props) {
+    // console.log(">>> updateReservations");
     const reservations = this.getReservations(props);
-    if (this.list && !dateutils.sameDate(props.selectedDay, this.selectedDay)) {
+    if (this.list && (this.props.topDay !== props.topDay || !dateutils.sameDate(props.selectedDay, this.selectedDay))) {
+      // console.log(">>> 1 <<<<<");
       let scrollPosition = 0;
       for (let i = 0; i < reservations.scrollPosition; i++) {
         scrollPosition += this.heights[i] || 0;
       }
       this.scrollOver = false;
       this.list.scrollToOffset({offset: scrollPosition, animated: true});
+      // console.log(">>> 2 <<<<<", scrollPosition);
     }
     this.selectedDay = props.selectedDay;
     this.updateDataSource(reservations.reservations);
+    // console.log(">>> 3 <<<<<");
   }
 
   updateReservationsCore(props) {
@@ -93,6 +97,7 @@ class ReservationList extends Component {
   UNSAFE_componentWillReceiveProps(props) {
     // console.log('>>> receivingProps:', props);
     if (!dateutils.sameMonth(props.topDay, this.props.topDay)) {
+      // console.log(">>>>> zerando o estado...");
       this.setState(
         {
           reservations: []
@@ -156,6 +161,8 @@ class ReservationList extends Component {
   getReservationsForDay(iterator, props) {
     const day = iterator.clone();
     const res = props.reservations[day.toString('yyyy-MM-dd')];
+    console.log(">>> iterator:", iterator);
+    console.log(">>> res:", res);
     if (res && res.length) {
       return res.map((reservation, i) => {
         return {
@@ -187,7 +194,10 @@ class ReservationList extends Component {
     let reservations = [];
     if (this.state.reservations && this.state.reservations.length) {
       const iterator = this.state.reservations[0].day.clone();
+      // console.log(">>>>> iterator", iterator);
+      // console.log(">>>>> props.selectedDay", props.selectedDay);
       while (iterator.getTime() < props.selectedDay.getTime()) {
+        // console.log(">>>>> " + iterator + " < " + props.selectedDay.getTime());
         const res = this.getReservationsForDay(iterator, props);
         if (!res) {
           reservations = [];
@@ -201,11 +211,19 @@ class ReservationList extends Component {
 
     let scrollPosition = reservations.length;
     let iterator = props.selectedDay.clone();
+
     if(reservations.length === 0){
       iterator.setDate(1);
     }
 
-    for (let i = 0; i < 31; i++) {
+    let lastDay = iterator.clone();
+    lastDay.setMonth(iterator.getMonth() + 1);
+    lastDay.setDate(0);
+
+    for (let i = 0; i <= lastDay.getDate(); i++) {
+      if(!dateutils.sameMonth(iterator, lastDay)){
+        break;
+      }
       const res = this.getReservationsForDay(iterator, props);
       if (res) {
         reservations = reservations.concat(res);
@@ -214,6 +232,7 @@ class ReservationList extends Component {
     }
 
     return {reservations, scrollPosition};
+
   }
 
   render() {
@@ -259,7 +278,7 @@ class ReservationList extends Component {
             this.loadTimeout = setTimeout(()=>{
               this.updateReservationsCore(this.props)
               this.setState({isLoading: false})
-            }, 300);
+            }, 500);
           }}
         />
         {this.state.isLoading && (
