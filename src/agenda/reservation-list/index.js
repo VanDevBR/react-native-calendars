@@ -197,7 +197,7 @@ class ReservationList extends Component {
     let iterator = props.selectedDay.clone();
     iterator.setDate(1);
 
-    let lastDay = new Date(iterator);
+    let lastDay = iterator.clone();
     lastDay.setMonth(lastDay.getMonth()+1);
     lastDay.setDate(0);
 
