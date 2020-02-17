@@ -55,7 +55,16 @@ export default class AgendaScreen extends Component {
     setTimeout(() => {
       let newItems = {};
 
-      for (let i = 1; i <= 28; i++) {
+      let lastDay = new Date(day.timestamp);
+      lastDay.setMonth(day.month);
+      lastDay.setDate(0);
+
+      for (let i = 1; i <= lastDay.getDate(); i++) {
+
+        if(day.month !== lastDay.getMonth() +1){
+          break;
+        }
+
         var key =
           day.year +
           '-' +
