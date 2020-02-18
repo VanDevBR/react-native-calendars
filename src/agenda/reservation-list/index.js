@@ -65,21 +65,17 @@ class ReservationList extends Component {
   }
 
   updateReservations(props) {
-    // console.log(">>> updateReservations");
     const reservations = this.getReservations(props);
     if (this.list && (this.props.topDay !== props.topDay || !dateutils.sameDate(props.selectedDay, this.selectedDay))) {
-      // console.log(">>> 1 <<<<<");
       let scrollPosition = 0;
       for (let i = 0; i < reservations.scrollPosition; i++) {
         scrollPosition += this.heights[i] || 0;
       }
       this.scrollOver = false;
       this.list.scrollToOffset({offset: scrollPosition, animated: true});
-      // console.log(">>> 2 <<<<<", scrollPosition);
     }
     this.selectedDay = props.selectedDay;
     this.updateDataSource(reservations.reservations);
-    // console.log(">>> 3 <<<<<");
   }
 
   updateReservationsCore(props) {
@@ -97,18 +93,15 @@ class ReservationList extends Component {
   UNSAFE_componentWillReceiveProps(props) {
     // console.log('>>> receivingProps:', props);
     if (!dateutils.sameMonth(props.topDay, this.props.topDay)) {
-      // console.log(">>>>> zerando o estado...");
       this.setState(
         {
           reservations: []
         },
         () => {
-          // console.log('willReceive1');
           this.updateReservations(props);
         },
       );
     } else {
-      // console.log('willReceive2');
       this.updateReservations(props);
     }
   }
@@ -161,8 +154,6 @@ class ReservationList extends Component {
   getReservationsForDay(iterator, props) {
     const day = iterator.clone();
     const res = props.reservations[day.toString('yyyy-MM-dd')];
-    // console.log('>>> iterator:', iterator);
-    // console.log('>>> res:', res);
     if (res && res.length) {
       return res.map((reservation, i) => {
         return {
@@ -188,7 +179,6 @@ class ReservationList extends Component {
   }
 
   getReservations(props) {
-    // console.log(">>> getReservations:", props);
     if (!props.reservations || !props.selectedDay) {
       return {reservations: [], scrollPosition: 0};
     }
@@ -201,9 +191,6 @@ class ReservationList extends Component {
     lastDay.setMonth(lastDay.getMonth()+1);
     lastDay.setDate(0);
 
-    // console.log(">>>>> iterator:", iterator);
-    // console.log(">>>>> lastDay:", lastDay);
-
     for (let i = 0; i <= lastDay.getDate(); i++) {
       if(iterator.getMonth() !== lastDay.getMonth()){
         break;
@@ -214,16 +201,12 @@ class ReservationList extends Component {
         if(iterator.getTime() === props.selectedDay.getTime()){
           scrollPosition = reservations.length;
         }
-        // console.log(">>>>> concat:", iterator.getDate());
         reservations = reservations.concat(res);
       }
       iterator.addDays(1);
     }
 
-    // console.log(">>> reservation:", reservations)
-
     return {reservations, scrollPosition};
-
   }
 
   render() {
