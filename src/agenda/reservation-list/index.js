@@ -79,15 +79,17 @@ class ReservationList extends Component {
   }
 
   updateReservationsCore(props) {
-    const reservations = this.getReservations(props);
-    let scrollPosition = 0;
-    for (let i = 0; i < reservations.scrollPosition; i++) {
-      scrollPosition += this.heights[i] || 0;
+    if(this.list){
+      const reservations = this.getReservations(props);
+      let scrollPosition = 0;
+      for (let i = 0; i < reservations.scrollPosition; i++) {
+        scrollPosition += this.heights[i] || 0;
+      }
+      this.scrollOver = false;
+      this.list.scrollToOffset({offset: scrollPosition, animated: true});
+      this.selectedDay = props.selectedDay;
+      this.updateDataSource(reservations.reservations);
     }
-    this.scrollOver = false;
-    this.list.scrollToOffset({offset: scrollPosition, animated: true});
-    this.selectedDay = props.selectedDay;
-    this.updateDataSource(reservations.reservations);
   }
 
   UNSAFE_componentWillReceiveProps(props) {
