@@ -518,8 +518,15 @@ export default class AgendaView extends Component {
       ) : (
         <View style={this.styles.knob}/>
       );
-      knob = this.state.calendarScrollable ? null : (
-        <View style={this.styles.knobContainer}>
+      knob = (
+        <View style={[this.styles.knobContainer]} onTouchEnd={()=>{
+          if(this.state.calendarScrollable){
+            this._chooseDayFromCalendar(this.state.selectedDay);
+          } else {
+            this.onTouchStart();
+            this.onTouchEnd();
+          }
+        }}>
           <View ref={c => (this.knob = c)}>{knobView}</View>
         </View>
       );
@@ -592,7 +599,7 @@ export default class AgendaView extends Component {
                   : 'space-around'
             }}>
             {this.props.showWeekNumbers &&
-          <Text allowFontScaling={false} style={this.styles.weekday} numberOfLines={1}></Text>}
+            <Text allowFontScaling={false} style={this.styles.weekday} numberOfLines={1}></Text>}
             {weekDaysNames.map((day, index) => (
               <Text allowFontScaling={false} key={day + index} style={this.styles.weekday} numberOfLines={1}>{day}</Text>
             ))}
