@@ -16,7 +16,7 @@ export default function styleConstructor(theme = {}) {
     weekdays,
     header: {
       overflow: 'hidden',
-      justifyContent: 'flex-end',
+      justifyContent: 'center',
       position: 'absolute',
       height: '100%',
       width: '100%',
@@ -30,6 +30,7 @@ export default function styleConstructor(theme = {}) {
       height: 24,
       bottom: 0,
       alignItems: 'center',
+      justifyContent: "center",
       backgroundColor: appStyle.calendarBackground
     },
     weekday: {
